@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrari: Historia y Modelos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Italian flag gradient background */
+            background: linear-gradient(to right, #009246, #F1F2F1, #CE2B37); /* Green, White, Red */
+            scroll-behavior: smooth; /* Smooth scroll for anchor links */
+        }
+        .text-ferrari-red {
+            color: #dc2626; /* A strong red */
+        }
+        .bg-ferrari-red {
+            background-color: #dc2626; /* A strong red */
+        }
+        .border-ferrari-red {
+            border-color: #dc2626; /* A strong red */
+        }
+        .hover-bg-ferrari-dark-red:hover {
+            background-color: #b91c1c; /* Darker red on hover */
+        }
+
+        /* H1 hover effect */
+        h1.ferrari-title:hover {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); /* Subtle white glow */
+            transition: text-shadow 0.3s ease;
+        }
+
+        /* Nav link hover effect */
+        nav ul li a {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        nav ul li a:hover {
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+
+        .card-flip {
+            perspective: 1000px; /* For 3D effect */
+            cursor: pointer; /* Indicate it's clickable */
+            /* Floating effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Initial subtle shadow */
+        }
+        .card-flip:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* More pronounced shadow on hover */
+        }
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        /* New class for flipped state */
+        .card-inner.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            border-radius: 0.75rem; /* rounded-xl */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .card-front {
+            background-color: #fef2f2; /* Light red, contrasting with gradient */
+            color: #dc2626; /* Ferrari red */
+            border: 2px solid #dc2626;
+        }
+        .card-back {
+            background-color: #dc2626; /* Ferrari red */
+            color: #fef2f2; /* Light red */
+            transform: rotateY(180deg);
+            border: 2px solid #b91c1c;
+        }
+        /* Floating button */
+        .float-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: #dc2626;
+            color: white;
+            padding: 1rem;
+            border-radius: 9999px; /* rounded-full */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        .float-button:hover {
+            background-color: #b91c1c;
+        }
+
+        /* Carousel specific styles */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px; /* Max width for the carousel */
+            margin: 2rem auto;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            background-color: #fff;
+        }
+        .carousel-slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 1rem;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: auto;
+            max-height: 400px; /* Max height for carousel images */
+            object-fit: contain; /* Ensures the image fits within the bounds */
+            border-radius: 0.5rem;
+        }
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(220, 38, 38, 0.8); /* Ferrari red with transparency */
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            transition: background-color 0.3s ease;
+            z-index: 10;
+        }
+        .carousel-button:hover {
+            background-color: rgba(185, 28, 28, 0.9); /* Darker red on hover */
+        }
+        .carousel-button-prev {
+            left: 10px;
+        }
+        .carousel-button-next {
+            right: 10px;
+        }
+        .carousel-caption {
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #dc2626; /* Ferrari red */
+        }
+        /* Style for no results message */
+        .no-results {
+            background-color: #fee2e2; /* Light red */
+            color: #dc2626; /* Ferrari red */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            border: 1px solid #ef4444; /* Red border */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header Section -->
+    <header id="inicio" class="bg-ferrari-red text-white p-6 shadow-lg rounded-b-xl">
+        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between">
+            <!-- Logo and Title -->
+            <div class="flex items-center mb-4 md:mb-0">
+                <img src="https://images.unsplash.com/photo-1687652073426-d1f648a1fd89?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Logo Ferrari" class="h-20 w-20 rounded-full mr-4 border-2 border-white">
+                <h1 class="text-5xl font-bold tracking-wider ferrari-title">Ferrari</h1>
+            </div>
+            <!-- Navigation -->
+            <nav class="w-full md:w-auto mt-4 md:mt-0">
+                <ul class="flex flex-wrap justify-center md:space-x-8 space-x-4 text-lg font-semibold mb-4 md:mb-0">
+                    <li class="relative group">
+                        <a href="#modelos" class="hover:text-gray-200 transition duration-300">Modelos</a>
+                        <ul class="absolute hidden group-hover:block bg-ferrari-red text-white pt-2 rounded-lg shadow-lg w-48 z-10">
+                            <li><a href="#antiguos" class="block px-4 py-2 hover:bg-ferrari-dark-red rounded-t-lg">Antiguos</a></li>
+                            <li><a href="#modernos" class="block px-4 py-2 hover:bg-ferrari-dark-red">Modernos</a></li>
+                            <li><a href="#superdeportivos" class="block px-4 py-2 hover:bg-ferrari-dark-red rounded-b-lg">Superdeportivos</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#galeria" class="hover:text-gray-200 transition duration-300">Galería</a></li>
+                    <li><a href="#historia" class="hover:text-gray-200 transition duration-300">Historia</a></li>
+                    <li><a href="#enlaces" class="hover:text-gray-200 transition duration-300">Enlaces</a></li>
+                </ul>
+                <!-- Search Bar -->
+                <div class="flex justify-center md:justify-end mt-4 md:mt-0">
+                    <input type="text" id="modelSearch" placeholder="Buscar modelo..." class="p-2 rounded-l-lg border-none focus:outline-none text-gray-800 w-full md:w-64">
+                    <button onclick="filterModels()" class="bg-white text-ferrari-red p-2 rounded-r-lg hover:bg-gray-200 transition duration-300">Buscar</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Carousel Section -->
+    <section class="carousel-container">
+        <div class="carousel-slides" id="carouselSlides">
+            <div class="carousel-slide">
+                <img src="https://cdn.motor1.com/images/mgl/bgEVvM/s1/pre-production-ferrari-f50.jpg" alt="Ferrari F50">
+                <p class="carousel-caption">Ferrari F50</p>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/9d/2021_Ferrari_Roma_in_Rosso_Fiorano%2C_front_right.jpg" alt="Ferrari Roma">
+                <p class="carousel-caption">Ferrari Roma</p>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://hips.hearstapps.com/es.h-cdn.co/cades/contenidos/14115/ferrarifxxk1.jpg" alt="Ferrari FXXK">
+                <p class="carousel-caption">Ferrari FXXK</p>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1724247578787-7dbb96b6f5e8?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Ferrari Testarossa">
+                <p class="carousel-caption">Ferrari Testarossa</p>
+            </div>
+            <div class="carousel-slide">
+                <img src="https://images.unsplash.com/photo-1627526355640-3ab76dd414db?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Ferrari Enzo">
+                <p class="carousel-caption">Ferrari Enzo</p>
+            </div>
+        </div>
+        <button class="carousel-button carousel-button-prev" onclick="moveSlide(-1)">&#10094;</button>
+        <button class="carousel-button carousel-button-next" onclick="moveSlide(1)">&#10095;</button>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto my-8 p-4">
+
+        <!-- Models Section -->
+        <section id="modelos" class="bg-white p-8 rounded-xl shadow-lg mb-8 border border-ferrari-red">
+            <h2 class="text-4xl font-bold text-ferrari-red mb-6 text-center">Modelos de Ferrari</h2>
+
+            <div id="antiguos" class="mb-8">
+                <h3 class="text-3xl font-semibold text-ferrari-red mb-4 border-b-2 border-ferrari-red pb-2">Antiguos</h3>
+                <ul class="list-disc list-inside text-lg space-y-2 model-list">
+                    <li><a href="#card-125s" class="text-blue-600 hover:underline" data-model-id="card-125s">Ferrari 125 S (1947)</a></li>
+                    <li><a href="#card-250gto" class="text-blue-600 hover:underline" data-model-id="card-250gto">Ferrari 250 GTO (1962)</a></li>
+                    <li><a href="#card-dino246gt" class="text-blue-600 hover:underline" data-model-id="card-dino246gt">Ferrari Dino 246 GT (1969)</a></li>
+                    <li><a href="#card-testarossa" class="text-blue-600 hover:underline" data-model-id="card-testarossa">Ferrari Testarossa (1984)</a></li>
+                    <li><a href="#card-f40" class="text-blue-600 hover:underline" data-model-id="card-f40">Ferrari F40 (1987)</a></li>
+                    <li><a href="#card-365gtb4daytona" class="text-blue-600 hover:underline" data-model-id="card-365gtb4daytona">Ferrari 365 GTB/4 Daytona (1968)</a></li>
+                </ul>
+            </div>
+
+            <div id="modernos" class="mb-8">
+                <h3 class="text-3xl font-semibold text-ferrari-red mb-4 border-b-2 border-ferrari-red pb-2">Modernos</h3>
+                <ul class="list-disc list-inside text-lg space-y-2 model-list">
+                    <li><a href="#card-458italia" class="text-blue-600 hover:underline" data-model-id="card-458italia">Ferrari 458 Italia (2009)</a></li>
+                    <li><a href="#card-f12berlinetta" class="text-blue-600 hover:underline" data-model-id="card-f12berlinetta">Ferrari F12 Berlinetta (2012)</a></li>
+                    <li><a href="#card-portofino" class="text-blue-600 hover:underline" data-model-id="card-portofino">Ferrari Portofino (2017)</a></li>
+                    <li><a href="#card-roma" class="text-blue-600 hover:underline" data-model-id="card-roma">Ferrari Roma (2019)</a></li>
+                    <li><a href="#card-812superfast" class="text-blue-600 hover:underline" data-model-id="card-812superfast">Ferrari 812 Superfast (2017)</a></li>
+                    <li><a href="#card-296gtb" class="text-blue-600 hover:underline" data-model-id="card-296gtb">Ferrari 296 GTB (2021)</a></li>
+                </ul>
+            </div>
+
+            <div id="superdeportivos" class="mb-8">
+                <h3 class="text-3xl font-semibold text-ferrari-red mb-4 border-b-2 border-ferrari-red pb-2">Superdeportivos</h3>
+                <ul class="list-disc list-inside text-lg space-y-2 model-list">
+                    <li><a href="#card-enzo" class="text-blue-600 hover:underline" data-model-id="card-enzo">Ferrari Enzo (2002)</a></li>
+                    <li><a href="#card-laferrari" class="text-blue-600 hover:underline" data-model-id="card-laferrari">LaFerrari (2013)</a></li>
+                    <li><a href="#card-sf90stradale" class="text-blue-600 hover:underline" data-model-id="card-sf90stradale">Ferrari SF90 Stradale (2019)</a></li>
+                    <li><a href="#card-daytonasp3" class="text-blue-600 hover:underline" data-model-id="card-daytonasp3">Ferrari Daytona SP3 (2021)</a></li>
+                    <li><a href="#card-fxxk" class="text-blue-600 hover:underline" data-model-id="card-fxxk">Ferrari FXX K (2014)</a></li>
+                    <li><a href="#card-599xx" class="text-blue-600 hover:underline" data-model-id="card-599xx">Ferrari 599XX (2009)</a></li>
+                </ul>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResultsMessage" class="no-results hidden">
+                <p>No se encontraron modelos con ese nombre en nuestra lista.</p>
+                <p>¿Te gustaría <a id="googleSearchLink" href="#" target="_blank" class="text-blue-800 hover:underline font-bold">buscarlo en Google</a>?</p>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="galeria" class="bg-white p-8 rounded-xl shadow-lg mb-8 border border-ferrari-red">
+            <h2 class="text-4xl font-bold text-ferrari-red mb-6 text-center">Galería de Fotos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1: Ferrari 250 GTO -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-250gto">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://hips.hearstapps.com/hmg-prod/images/1962-ferrari-scaglietti-250-gto-101-1534954673.jpg" alt="Ferrari 250 GTO" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 250 GTO</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 250 GTO</h3>
+                            <p class="text-lg">Año: 1962-1964</p>
+                            <p class="text-lg">Motor: V12, 3.0L</p>
+                            <p class="text-lg">Potencia: 300 CV</p>
+                            <p class="text-lg">Vel. Máx: 280 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Ferrari 458 Italia -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-458italia">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://www.funcars.biz/wp-content/uploads/2023/07/1684959048-ferrari-458-002.jpg" alt="Ferrari 458 Italia" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 458 Italia</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 458 Italia</h3>
+                            <p class="text-lg">Año: 2009-2015</p>
+                            <p class="text-lg">Motor: V8, 4.5L</p>
+                            <p class="text-lg">Potencia: 570 CV</p>
+                            <p class="text-lg">Vel. Máx: 325 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: LaFerrari -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-laferrari">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://cdn.ferrari.com/cms/network/media/img/resize/5ddb97392cdb32285a799dfa-laferrari-2013-share?width=1080" alt="LaFerrari" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">LaFerrari</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">LaFerrari</h3>
+                            <p class="text-lg">Año: 2013-2016</p>
+                            <p class="text-lg">Motor: V12 Híbrido, 6.3L</p>
+                            <p class="text-lg">Potencia: 963 CV</p>
+                            <p class="text-lg">Vel. Máx: >350 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 4: Ferrari F40 -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-f40">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/10/Ferrari_F40_7.jpg" alt="Ferrari F40" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari F40</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari F40</h3>
+                            <p class="text-lg">Año: 1987-1992</p>
+                            <p class="text-lg">Motor: V8 Twin-Turbo, 2.9L</p>
+                            <p class="text-lg">Potencia: 478 CV</p>
+                            <p class="text-lg">Vel. Máx: 324 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 5: Ferrari Roma -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-roma">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://alpsandautobahns.com/wp-content/uploads/2024/09/Roma-Spider-1-1700x957.jpg" alt="Ferrari Roma" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Roma</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Roma</h3>
+                            <p class="text-lg">Año: 2019-Presente</p>
+                            <p class="text-lg">Motor: V8 Twin-Turbo, 3.9L</p>
+                            <p class="text-lg">Potencia: 620 CV</p>
+                            <p class="text-lg">Vel. Máx: 320 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 6: Ferrari SF90 Stradale -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-sf90stradale">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://hips.hearstapps.com/hmg-prod/images/2024-ferrari-sf90-xx-stradale-109-654a668fc71a3.jpg?crop=0.582xw:0.490xh;0.204xw,0.373xh&resize=2048:*" alt="Ferrari SF90 Stradale" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari SF90 Stradale</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari SF90 Stradale</h3>
+                            <p class="text-lg">Año: 2019-Presente</p>
+                            <p class="text-lg">Motor: V8 Híbrido, 4.0L</p>
+                            <p class="text-lg">Potencia: 1000 CV</p>
+                            <p class="text-lg">Vel. Máx: 340 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 7: Ferrari Testarossa -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-testarossa">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://cdn.prod.website-files.com/66da09ee919601fcdef82d9a/66e223896ee53933d4635a1c_65ae7dede15e56ee54a1de53_fer2.jpeg.1024x576_q75_crop-smart.jpeg" alt="Ferrari Testarossa" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Testarossa</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Testarossa</h3>
+                            <p class="text-lg">Año: 1984-1996</p>
+                            <p class="text-lg">Motor: Flat-12, 4.9L</p>
+                            <p class="text-lg">Potencia: 390 CV</p>
+                            <p class="text-lg">Vel. Máx: 290 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 8: Ferrari Enzo -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-enzo">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://acnews.blob.core.windows.net/imgnews/large/NAZ_d288910302894ce3a465376ab2fcb45c.jpg" alt="Ferrari Enzo" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Enzo</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Enzo</h3>
+                            <p class="text-lg">Año: 2002-2004</p>
+                            <p class="text-lg">Motor: V12, 6.0L</p>
+                            <p class="text-lg">Potencia: 660 CV</p>
+                            <p class="text-lg">Vel. Máx: 350 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 9: Ferrari 296 GTB -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-296gtb">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Ferrari_296_GTB_1X7A6377.jpg/960px-Ferrari_296_GTB_1X7A6377.jpg" alt="Ferrari 296 GTB" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 296 GTB</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 296 GTB</h3>
+                            <p class="text-lg">Año: 2021-Presente</p>
+                            <p class="text-lg">Motor: V6 Híbrido, 3.0L</p>
+                            <p class="text-lg">Potencia: 830 CV</p>
+                            <p class="text-lg">Vel. Máx: >330 km/h</p>
+                        </div>
+                        </div>
+                </div>
+
+                <!-- New Card 10: Ferrari 125 S -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-125s">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://media.autoexpress.co.uk/image/private/s--X-WVjvBW--/f_auto,t_content-image-full-desktop@1/v1562244085/autoexpress/2017/02/ferrari_125_s.jpg" alt="Ferrari 125 S" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 125 S</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 125 S</h3>
+                            <p class="text-lg">Año: 1947</p>
+                            <p class="text-lg">Motor: V12, 1.5L</p>
+                            <p class="text-lg">Potencia: 118 CV</p>
+                            <p class="text-lg">Vel. Máx: 170 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 11: Ferrari Dino 246 GT -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-dino246gt">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://acnews.blob.core.windows.net/imgnews/large/NAZ_f245dab04a15402aa25c34a30587bb13.webp" alt="Ferrari Dino 246 GT" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Dino 246 GT</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Dino 246 GT</h3>
+                            <p class="text-lg">Año: 1969-1974</p>
+                            <p class="text-lg">Motor: V6, 2.4L</p>
+                            <p class="text-lg">Potencia: 195 CV</p>
+                            <p class="text-lg">Vel. Máx: 235 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 12: Ferrari 365 GTB/4 Daytona -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-365gtb4daytona">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/1973_Ferrari_Daytona_365_GTB4_Blue_LC22.jpg" alt="Ferrari 365 GTB/4 Daytona" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 365 GTB/4 Daytona</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 365 GTB/4 Daytona</h3>
+                            <p class="text-lg">Año: 1968-1973</p>
+                            <p class="text-lg">Motor: V12, 4.4L</p>
+                            <p class="text-lg">Potencia: 352 CV</p>
+                            <p class="text-lg">Vel. Máx: 280 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 13: Ferrari F12 Berlinetta -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-f12berlinetta">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://cdn.dealeraccelerate.com/fusion/1/827/33259/1920x1440/2017-ferrari-f12berlinetta-coupe" alt="Ferrari F12 Berlinetta" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari F12 Berlinetta</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari F12 Berlinetta</h3>
+                            <p class="text-lg">Año: 2012-2017</p>
+                            <p class="text-lg">Motor: V12, 6.3L</p>
+                            <p class="text-lg">Potencia: 740 CV</p>
+                            <p class="text-lg">Vel. Máx: 340 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 14: Ferrari Portofino -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-portofino">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Ferrari_Portofino_M_IMG_4351.jpg/960px-Ferrari_Portofino_M_IMG_4351.jpg" alt="Ferrari Portofino" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Portofino</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Portofino</h3>
+                            <p class="text-lg">Año: 2017-2020</p>
+                            <p class="text-lg">Motor: V8 Twin-Turbo, 3.9L</p>
+                            <p class="text-lg">Potencia: 600 CV</p>
+                            <p class="text-lg">Vel. Máx: 320 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 15: Ferrari 812 Superfast -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-812superfast">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/2019_Ferrari_812_Superfast_S-A_6.5.jpg/1200px-2019_Ferrari_812_Superfast_S-A_6.5.jpg" alt="Ferrari 812 Superfast" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 812 Superfast</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 812 Superfast</h3>
+                            <p class="text-lg">Año: 2017-Presente</p>
+                            <p class="text-lg">Motor: V12, 6.5L</p>
+                            <p class="text-lg">Potencia: 800 CV</p>
+                            <p class="text-lg">Vel. Máx: 340 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 16: Ferrari Daytona SP3 -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-daytonasp3">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://hips.hearstapps.com/hmg-prod/images/2022-ferrari-daytona-sp3-133-1659298033.jpg?crop=0.425xw:0.362xh;0.292xw,0.314xh&resize=1200:*" alt="Ferrari Daytona SP3" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari Daytona SP3</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari Daytona SP3</h3>
+                            <p class="text-lg">Año: 2021-Presente</p>
+                            <p class="text-lg">Motor: V12, 6.5L</p>
+                            <p class="text-lg">Potencia: 840 CV</p>
+                            <p class="text-lg">Vel. Máx: >340 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 17: Ferrari FXX K -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-fxxk">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://i.ytimg.com/vi/iKAhHDC0b64/maxresdefault.jpg" alt="Ferrari FXX K" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari FXX K</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari FXX K</h3>
+                            <p class="text-lg">Año: 2014-2017</p>
+                            <p class="text-lg">Motor: V12 Híbrido, 6.3L</p>
+                            <p class="text-lg">Potencia: 1050 CV</p>
+                            <p class="text-lg">Vel. Máx: >350 km/h</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Card 18: Ferrari 599XX -->
+                <div class="card-flip w-full h-80 rounded-xl shadow-md" id="card-599xx">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <img src="https://sbraceengineering.co.uk/wp-content/uploads/Ferrari-599-XX-1024x630.jpg" alt="Ferrari 599XX" class="w-full h-auto rounded-md mb-4">
+                            <p class="text-xl font-semibold">Ferrari 599XX</p>
+                        </div>
+                        <div class="card-back">
+                            <h3 class="text-2xl font-bold mb-2">Ferrari 599XX</h3>
+                            <p class="text-lg">Año: 2009-2011</p>
+                            <p class="text-lg">Motor: V12, 6.0L</p>
+                            <p class="text-lg">Potencia: 720 CV</p>
+                            <p class="text-lg">Vel. Máx: >315 km/h</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="historia" class="bg-white p-8 rounded-xl shadow-lg mb-8 border border-ferrari-red">
+            <h2 class="text-4xl font-bold text-ferrari-red mb-6 text-center">Historia de Ferrari</h2>
+            <div class="text-lg leading-relaxed">
+                <p class="mb-4">
+                    Ferrari S.p.A. es una empresa italiana de automóviles deportivos con sede en Maranello, Italia. Fue fundada por Enzo Ferrari en 1929 como Scuderia Ferrari, que construía coches de carreras y patrocinaba a pilotos. No fue hasta 1947 que la empresa comenzó a producir coches deportivos para carretera, convirtiéndose en el fabricante que conocemos hoy.
+                </p>
+                <h3 class="text-2xl font-semibold text-ferrari-red mb-3">Modelos Icónicos</h3>
+                <p class="mb-4">
+                    A lo largo de su historia, Ferrari ha producido numerosos modelos que se han convertido en verdaderos íconos del automovilismo. Entre ellos destacan el <strong>Ferrari 250 GTO</strong>, considerado uno de los coches más valiosos y deseados del mundo; el <strong>Ferrari F40</strong>, el último Ferrari aprobado por Enzo Ferrari antes de su muerte; y la serie de superdeportivos como el <strong>Enzo Ferrari</strong> y <strong>LaFerrari</strong>, que representan la cúspide de la ingeniería y el diseño de la marca.
+                </p>
+                <h3 class="text-2xl font-semibold text-ferrari-red mb-3">Fundador y Filosofía</h3>
+                <p class="mb-4">
+                    La visión de Enzo Ferrari siempre fue la de construir coches que fueran una extensión de la pista de carreras, llevando la emoción y el rendimiento de la competición a la carretera. Su pasión por la velocidad y la perfección se ha mantenido como el pilar fundamental de la filosofía de la empresa, haciendo de cada Ferrari una obra de arte y de ingeniería.
+                </p>
+            </div>
+        </section>
+
+        <!-- Links Section -->
+        <section id="enlaces" class="bg-white p-8 rounded-xl shadow-lg mb-8 border border-ferrari-red">
+            <h2 class="text-4xl font-bold text-ferrari-red mb-6 text-center">Enlaces de Interés</h2>
+            <ul class="list-disc list-inside text-lg space-y-2">
+                <li><a href="https://www.ferrari.com/es-ES" target="_blank" class="text-blue-600 hover:underline">Sitio Oficial de Ferrari</a></li>
+                <li><a href="https://es.wikipedia.org/wiki/Ferrari" target="_blank" class="text-blue-600 hover:underline">Ferrari en Wikipedia</a></li>
+                <li><a href="https://www.formula1.com/en/teams/Ferrari.html" target="_blank" class="text-blue-600 hover:underline">Scuderia Ferrari en Fórmula 1</a></li>
+            </ul>
+        </section>
+
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-ferrari-red text-white p-6 text-center rounded-t-xl shadow-inner">
+        <p class="text-lg">&copy; 2025 Contenido creado por OM1972. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Floating Back to Top Button -->
+    <a href="#inicio" class="float-button">
+        Volver al Inicio
+    </a>
+
+    <script>
+        // Carousel functionality
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            if (index >= totalSlides) {
+                currentSlide = 0;
+            } else if (index < 0) {
+                currentSlide = totalSlides - 1;
+            } else {
+                currentSlide = index;
+            }
+            const offset = -currentSlide * 100;
+            document.getElementById('carouselSlides').style.transform = `translateX(${offset}%)`;
+        }
+
+        function moveSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        // Card flip on click functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial display for carousel
+            showSlide(0);
+
+            // Add click event listener to each card-flip element
+            const cards = document.querySelectorAll('.card-flip');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.querySelector('.card-inner').classList.toggle('is-flipped');
+                });
+            });
+
+            // Add event listener for search input on keyup
+            const modelSearchInput = document.getElementById('modelSearch');
+            modelSearchInput.addEventListener('keyup', filterModels);
+
+            // Add click event listeners to model list links
+            const modelLinks = document.querySelectorAll('.model-list a');
+            modelLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default anchor link behavior
+                    const targetId = this.getAttribute('data-model-id'); // Get the ID from data-model-id
+                    const targetCard = document.getElementById(targetId);
+
+                    if (targetCard) {
+                        // Scroll to the card
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                        // Flip the card if it's not already flipped
+                        const cardInner = targetCard.querySelector('.card-inner');
+                        if (!cardInner.classList.contains('is-flipped')) {
+                            cardInner.classList.add('is-flipped');
+                        }
+                    }
+                });
+            });
+        });
+
+        // Model search functionality
+        function filterModels() {
+            const searchTerm = document.getElementById('modelSearch').value.toLowerCase();
+            const modelLists = document.querySelectorAll('.model-list'); // Get all ul elements with class model-list
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            const googleSearchLink = document.getElementById('googleSearchLink');
+            let foundModels = false;
+            let firstFoundCardId = null;
+
+            // Reset all cards to unflipped state and hide all model list items
+            const allCards = document.querySelectorAll('.card-flip');
+            allCards.forEach(card => {
+                card.querySelector('.card-inner').classList.remove('is-flipped');
+            });
+            modelLists.forEach(list => {
+                list.querySelectorAll('li').forEach(item => {
+                    item.style.display = 'none';
+                });
+            });
+
+            modelLists.forEach(list => {
+                const listItems = list.querySelectorAll('li');
+                listItems.forEach(item => {
+                    const modelName = item.textContent.toLowerCase();
+                    if (modelName.includes(searchTerm)) {
+                        item.style.display = ''; // Show the list item
+                        foundModels = true;
+
+                        // Get the data-model-id from the link within the list item
+                        const modelLink = item.querySelector('a');
+                        if (modelLink) {
+                            const cardId = modelLink.getAttribute('data-model-id');
+                            if (cardId) {
+                                const targetCard = document.getElementById(cardId);
+                                if (targetCard) {
+                                    // Flip the found card
+                                    targetCard.querySelector('.card-inner').classList.add('is-flipped');
+                                    if (!firstFoundCardId) { // Store the first found card's ID to scroll to it
+                                        firstFoundCardId = cardId;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            if (searchTerm.trim() !== '' && !foundModels) {
+                noResultsMessage.classList.remove('hidden');
+                googleSearchLink.href = `https://www.google.com/search?q=Ferrari+${encodeURIComponent(searchTerm)}`;
+            } else {
+                noResultsMessage.classList.add('hidden');
+                // If models are found, scroll to the first one
+                if (firstFoundCardId) {
+                    document.getElementById(firstFoundCardId).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
